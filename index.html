@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter-like Platform</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        /* Custom styles for demonstration purposes */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        #tweets {
+            background-color: #fff;
+            border: 1px solid #dddfe2;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .tweet {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #dddfe2;
+            padding-bottom: 10px;
+        }
+        .tweet-user {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .tweet-content {
+            margin-bottom: 10px;
+        }
+        .tweet-reply {
+            color: #1da1f2;
+            cursor: pointer;
+        }
+        textarea {
+            width: 100%;
+            border: 1px solid #dddfe2;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #1da1f2;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0d8bfd;
+        }
+        /* Additional styles for profile form */
+        form {
+            background-color: #fff;
+            border: 1px solid #dddfe2;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            border: 1px solid #dddfe2;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        /* Sign-out button style */
+        #signOutBtn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #signOutBtn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile form -->
+        <form id="profileForm">
+            <h2>Create Your Profile</h2>
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+            <label for="profilePicture">Profile Picture URL:</label>
+            <input type="text" id="profilePicture" placeholder="Optional">
+            <button type="submit">Create Profile</button>
+        </form>
+
+        <!-- Sign-out button -->
+        <button id="signOutBtn" onclick="signOut()">Sign Out</button>
+
+        <!-- Tweet section -->
+        <div id="tweets">
+            <!-- Tweets will be dynamically added here -->
+        </div>
+
+        <!-- Tweet input section -->
+        <textarea id="tweetInput" placeholder="Compose your tweet"></textarea>
+        <button onclick="postTweet()">Tweet</button>
+    </div>
+
+    <script>
+        // Simulated user data
+        var currentUser = null;
+
+        // Basic JavaScript for handling tweets and profiles
+        document.getElementById('profileForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var username = document.getElementById('username').value.trim();
+            var profilePicture = document.getElementById('profilePicture').value.trim();
+
+            if (username !== '') {
+                currentUser = {
+                    username: username,
+                    profilePicture: profilePicture || 'https://placekitten.com/50/50', // Default profile picture
+                };
+
+                document.getElementById('profileForm').style.display = 'none'; // Hide the profile form
+
+                alert('Profile created!\nUsername: ' + currentUser.username);
+            }
+        });
+
+        // Sign-out functionality
+        function signOut() {
+            currentUser = null;
+            document.getElementById('profileForm').style.display = 'block'; // Show the profile form
+        }
+
+        function postTweet() {
+            var tweetInput = document.getElementById('tweetInput');
+            var tweetText = tweetInput.value.trim();
+
+            if (tweetText !== '') {
+                var tweetContainer = document.getElementById('tweets');
+                var newTweet = document.createElement('div');
+                newTweet.className = 'tweet alert alert-primary';
+
+                // Display user information
+                var userElement = document.createElement('div');
+                userElement.className = 'tweet-user';
+                userElement.textContent = currentUser ? currentUser.username : 'Anonymous';
+                newTweet.appendChild(userElement);
+
+                // Display tweet content
+                var contentElement = document.createElement('div');
+                contentElement.className = 'tweet-content';
+                contentElement.textContent = tweetText;
+                newTweet.appendChild(contentElement);
+
+                // Reply functionality
+                var replyLink = document.createElement('div');
+                replyLink.className = 'tweet-reply';
+                replyLink.textContent = 'Reply';
+                replyLink.addEventListener('click', function () {
+                    var replyInput = document.createElement('textarea');
+                    replyInput.placeholder = 'Your reply...';
+                    newTweet.appendChild(replyInput);
+
+                    var replyButton = document.createElement('button');
+                    replyButton.textContent = 'Post Reply';
+                    replyButton.className = 'btn btn-sm btn-primary';
+                    replyButton.addEventListener('click', function () {
+                        var replyText = replyInput.value.trim();
+                        if (replyText !== '') {
+                            var replyElement = document.createElement('div');
+                            replyElement.className = 'tweet alert alert-secondary';
+                            replyElement.textContent = 'Reply by ' + (currentUser ? currentUser.username : 'Anonymous') + ': ' + replyText;
+                            newTweet.appendChild(replyElement);
+                            replyInput.remove();
+                            replyButton.remove();
+                        }
+                    });
+                    newTweet.appendChild(replyButton);
+                });
+                newTweet.appendChild(replyLink);
+
+                // Simulating a server request
+                setTimeout(function () {
+                    tweetContainer.prepend(newTweet);
+                    alert('Tweet sent to the server: ' + tweetText);
+                    tweetInput.value = '';
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>
